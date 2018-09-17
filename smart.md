@@ -41,9 +41,9 @@ compatibility but there are also disadvantages:
   2. either all receivers needs to repeat the computation or extra server 
      resources are required to compute it.
 
-  3. some meta data could be captured only on source side for privacy, 
-     for example, the depth information from iPhone 3-D camera.(**More details?
-     I don't get it, why the 3d camera example here?**)
+  3. some meta data could be captured only on source side, for example, 
+     iPhone 3D camera could help extract more information than pure image 
+     processing.
   
 This document will focus on methods to capture the media meta data at sender 
 side and define how to transfer them along with media data to the receiver.
@@ -143,7 +143,7 @@ sub-message is defined as:
       ID: the identifier of the rectangle, value is defined by the app.
       Left/Top: 2 bytes each, the left top point of the rectangle.
       Width/Height: 2 bytes each, the width and height of the rectangle.
-      Name: the (*null-terminated string?*)UTF-8 string of the name tagging that rectangle, up to 63 bytes.
+      Name: the null-terminated UTF-8 string of the name tagging that rectangle, up to 63 bytes.
 
 ### SMART_TEXTS
 
@@ -239,4 +239,5 @@ and it should also support end to end encription.
 
 
 https://www.iana.org/assignments/media-types/media-types.xhtml
+
 http://asciiflow.com/
