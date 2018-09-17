@@ -3,19 +3,19 @@ draft-chen-mmusic-smart-00.txt
   
 ## Abstract
 
-While AI technology arising, automatically video annotation, speech transcribing
-and similar such techs were becoming mature. This document proposes one solution 
+While AI technology arising, automatical video annotation, speech transcription
+and similar such technologies are becoming mature. This document proposes one solution 
 to transfer and sync such meta data along the media in the context of RTCWeb.
  
 ## Introduction
 
-  Nowdays, face tracking and even recognition have already make great progress
-and were widely adopted. It can be used to smart cropping of the video avoiding 
-the face being cut, It can also be used to identify who were engaged in the 
+  Nowdays, face tracking and face recognition have already made a great progress
+and are widely adopted. Face tracking can be used to smart cropping of the video avoiding 
+the face being cut, face recognition can be used to identify who are engaged in the 
 communication by labelling the name in the video. Speech recognition technology 
-become mature too, it was not surprised that speech can be automatically 
-transcribed to text and assist the real time communications. This can be applied 
-to other object tracking, emotion detecting, simultaneous translation and so on.
+becomes mature too, it is not surprised that speech can be automatically 
+transcribed to text and assist the real time communications. AI technology can be applied 
+to other use cases, like object tracking, emotion detecting, simultaneous translation and so on.
 
 ````
                         +-----------------+
@@ -32,39 +32,46 @@ to other object tracking, emotion detecting, simultaneous translation and so on.
 ````
                           
   In a real-time communication scenario like in Figure 1, these intellegent 
-processing can be done in sender, media processor or receiver side. 
-The advantage of doing it in receiver side or media processor was backward 
-compatibility but there is also disadvantages: 
+processing can be done at sender, media processor or receiver. 
+The advantage of doing it at receiver or media processor was backward 
+compatibility but there are also disadvantages:
 
-  1. the media could have been degraded due to network transfer,
+  1. the media quality might degrade due to packet loss or delay on the network.
+
   2. either all receivers needs to repeat the computation or extra server 
-     resources are required to compute it,
-  3. some meta data could be captured only on source side for privacy, 
-     for example, the depth information from iPhone 3-D camera,
-  
-This document will focus on methods to capture the media meta data in sender 
-side and define how to transfer them along with media data.
+     resources are required to compute it.
 
-Compositing the annotation text or texture to the source picture was obviously 
-way to convey them to receivers, but there were some drawbacks either:
+  3. some meta data could be captured only on source side for privacy, 
+     for example, the depth information from iPhone 3-D camera.(**More details?
+     I don't get it, why the 3d camera example here?**)
   
-  1. If the video was degraded due to network, the text will be unclear,
-  2. The receiver can not turn on/off the annotation on-demand,
-  3. The receiver can not customize the utilization of such meta data,
+This document will focus on methods to capture the media meta data at sender 
+side and define how to transfer them along with media data to the receiver.
+
+Mixing the meta data with media at the sender is one way to convey them to receivers
+, but there are some drawbacks, take compositing annotation text onto the source
+picture as an example:
   
-This document chooses a new out-of-band payload to transfer them and sync them 
-through timestamp in the receiver, rather than extanding the current media 
+  1. If the video was degraded due to network, the text will be unclear.
+  
+  2. The receiver can not turn on/off the annotation on-demand.
+  
+  3. The receiver can not customize the utilization of such meta data.
+  
+This document proposes a new out-of-band payload to transfer them and synchornize
+them through timestamp at receiver, rather than extending the current media 
 payloads:
 
-  1. It was easier to achieve backward compatiblity,
+  1. It is easier to achieve backward compatiblity.
+  
   2. The transportation of the meta data could be different from the media.
      For example, the face tracking information could be combined with the audio 
      transcribed text and render together.
 
 The mechanism described in this document can also be used to transfer other 
-media meta data. For example, for dekstop sharing case, the mouse moving event 
-can be transfered separately through this format, and we can achieve higher 
-frame rate of mouse-move than the screen content.
+media meta data. For example, for dekstop sharing case, the mouse moving events 
+can be transfered separately in this format, and we can achieve higher 
+frame rate of mouse movement than the screen content.
 
 ## Message Format
 
@@ -104,7 +111,7 @@ Each sub-message will have at least 10 bytes headers, there are:
     SSRC: 4 bytes, the SSRC of the corresponding source
     Timestamp: 4 bytes, the timestamp of the corresponding source
 
-This document will define 3 sub-message types and they can be extended in future.
+This document will define 2 sub-message types and they can be extended in future.
 
             +------------------+----------+
             |    Sub-message   |   Value  |  
@@ -136,7 +143,7 @@ sub-message is defined as:
       ID: the identifier of the rectangle, value is defined by the app.
       Left/Top: 2 bytes each, the left top point of the rectangle.
       Width/Height: 2 bytes each, the width and height of the rectangle.
-      Name: the UTF-8 string of the name tagging that rectangle, up to 63 bytes.
+      Name: the (*null-terminated string?*)UTF-8 string of the name tagging that rectangle, up to 63 bytes.
 
 ### SMART_TEXTS
 
@@ -148,19 +155,23 @@ sub-message is defined as:
 
 Similar to the SMART_RECTS, each filed of this sub-message is defined as:
 
-    T: control if Time Offset field was set or not,
+    T: control if Time Offset field was present or not,
     Text Len: the length of the Name field minor 1, the name length can be 1-128,
     Time Offset: the millisecond time offset corresponding to the timestamp,
-    Text: A string in UTF-8 encoding,
+    Text: A string in UTF-8 encoding.
 
 ## SDP Negotiation
 
 The message can be sent along with RTP stream as RTP payload, it can also be 
 sent through Data Channel in SCTP.
 
-When it was sent through RTP stream, it can be multiplexed with either Audio or 
+When it is sent through RTP stream, it can be multiplexed with either Audio or 
 Video stream with its own sequence space and separate SSRC, the payload type 
 can be negotiated with dynamic payloads.
+
+Resilience technologies like FEC and RTP retransmission can be used on the
+annotation stream to provide some kind of reliablity when packet loss. Or in
+separate RTP session over realiabe channel like SCTP or TCP. 
 
 ### Media Type Registration
 
@@ -201,16 +212,18 @@ along with audio stream.
 
 ### Send Through Data Channel
 
+TODO?
+
 ## RTCWeb implicition
 
 To achieve the synced video annotation, RTCWeb needs to open interface for 
 application operating the rendering of the annotation with the video. Exposure 
-of the video raw data to JS layer and let application render it with Canvas or 
+of the video raw data to JS layer and let application renders it with Canvas or 
 WebGL would be a good choice.
 
 ## Compatible
 
-When the legacy endpoints received such an OFFER, it can just reject the payload.
+When the legacy endpoints received such an OFFER, it can just ignore the payload.
 
 ## Security Considerations
 
