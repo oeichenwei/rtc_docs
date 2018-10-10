@@ -35,7 +35,7 @@ author:
         name: Jeromy Fu
         org: Cisco
         role: editor
-        street: Kidekuja 2
+        street: Tasman
         city: San Jose
         code: 88600
         country: USA
@@ -43,9 +43,8 @@ author:
         email: jeromyf@cisco.com
 
 normative:
-  RFC2119:
-  RFC2616:
-  I-D.ietf-core-coap:
+  RFC6838:
+  RFC4855:
 
 informative:
   REST:
@@ -65,8 +64,7 @@ and similar such technologies are becoming mature. This document proposes one so
 to transfer and sync such meta data along the media in the context of RTCWeb.
  
 --- middle 
-Introduction
-===============
+# Introduction
 
   Nowdays, face tracking and face recognition have already made a great progress
 and are widely adopted. Face tracking can be used to smart cropping of the video avoiding 
@@ -76,7 +74,7 @@ becomes mature too, it is not surprised that speech can be automatically
 transcribed to text and assist the real time communications. AI technology can be applied 
 to other use cases, like object tracking, emotion detecting, simultaneous translation and so on.
 
-````
+~~~~~~~~~~~
                         +-----------------+
             +---------> | Media Processor +------------+
             |           +-----------------+            |
@@ -87,10 +85,10 @@ to other use cases, like object tracking, emotion detecting, simultaneous transl
         +----+----+                               +-----v----+
         | Sender  |                               | Receiver |
         +---------+                               +----------+
-                            Figure 1
-````
+~~~~~~~~~~~
+{: #center-topo title="Vanallia Media Flow Topology" }
                           
-  In a real-time communication scenario like in Figure 1, these intellegent 
+  In a real-time communication scenario like in {{center-topo}}, these intellegent 
 processing can be done at sender, media processor or receiver. 
 The advantage of doing it at receiver or media processor was backward 
 compatibility but there are also disadvantages:
@@ -132,25 +130,36 @@ media meta data. For example, for dekstop sharing case, the mouse moving events
 can be transfered separately in this format, and we can achieve higher 
 frame rate of mouse movement than the screen content.
 
-## Message Format
+# Message Format
 
-          +---------------+---------------+
-          |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
-          +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-          | V |   RES | P |      Count    |
-          +---+-------+---+---------------+
+~~~~~~~~~~~
+                    +---------------+---------------+
+                    |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
+                    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                    | V |   RES | P |      Count    |
+                    +---+-------+---+---------------+
+~~~~~~~~~~~
+{: #message-common-hdr title="Common Message Header" }
 
 The message will have 2 bytes header followed with an array of sub-messages. 
+All sub-messages share the same common header as in {{message-common-hdr}}.
 
-    V: the version of this message, it should be set to 0,
-    RES: the reserved field, should be set to 0 now,
-    P: priority of the message, lower priority packets can be dropped or delayed,
-    Count: the number of sub-messages embedded minor 1.
+V:
+: Version. The version of this message, it should be set to 0.
 
-All sub-message will share the common header.
+RES:
+: Reserved. The reserved field, should be set to 0 now.
 
-### Sub-message common header
+P:
+: Priority. The priority of the message, lower priority packets can be dropped or delayed.
 
+Count:
+: Count. The number of sub-messages embedded. There at least one submessage embedded, 
+  so the count plus one is the actual number of sub-messages.
+
+## Sub-message common header
+
+~~~~~~~~~~~
       +---------------+---------------+---------------+---------------+
       |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -162,16 +171,26 @@ All sub-message will share the common header.
       +---------------+---------------+---------------+---------------+
       |       ...Timestamp            |
       +---------------+---------------+
+~~~~~~~~~~~
+{: #submessage-fmt title="General Sub-message Format" }
 
-Each sub-message will have at least 10 bytes headers, there are:
+Each sub-message will have at least 10 bytes headers, the details are:
 
-    Type: one-byte pre-defined sub-message type, see table 1.
-    Len: the length of the sub-message, not including the common header, in bytes
-    SSRC: 4 bytes, the SSRC of the corresponding source
-    Timestamp: 4 bytes, the timestamp of the corresponding source
+Type:
+: one-byte pre-defined sub-message type, see table 1.
+    
+Len:
+: the length of the sub-message, not including the common header, in bytes
 
-This document will define 2 sub-message types and they can be extended in future.
+SSRC:
+: 4 bytes, the SSRC of the corresponding source
 
+Timestamp:
+: 4 bytes, the timestamp of the corresponding source
+
+This document defines 2 sub-message types and they can be extended in future.
+
+~~~~~~~~~~~
             +------------------+----------+
             |    Sub-message   |   Value  |  
             +------------------+----------+
@@ -179,9 +198,12 @@ This document will define 2 sub-message types and they can be extended in future
             +------------------+----------+
             |  SMART_TEXTS     |     1    |
             +------------------+----------+
+~~~~~~~~~~~
+{: #message-type title="Pre-defined Message Types" }
 
-### SMART_RECTS
+## SMART_RECTS
 
+~~~~~~~~~~~
       +---------------+---------------+---------------+---------------+
       |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -191,35 +213,60 @@ This document will define 2 sub-message types and they can be extended in future
       +---------------+---------------+---------------+---------------+
       |    ...Width   |            Height             |     Name      |
       +---------------+---------------+---------------+---------------+
-      
+~~~~~~~~~~~      
+{: #message-rects title="SMART_RECTS Message Format" }
+
 This pattern can be repeated, the total number of rectangles could be determined
 from the length field of the sub-message common header. Each filed of this 
 sub-message is defined as:
 
-      S: controls the Width/Height fields. If it is 0, there is no Width/Height.
-      I: controls the ID field. If it is 0, there is no ID filed.
-      Name Len: the length of the name field, it can between 0 - 63.
-      ID: the identifier of the rectangle, value is defined by the app.
-      Left/Top: 2 bytes each, the left top point of the rectangle.
-      Width/Height: 2 bytes each, the width and height of the rectangle.
-      Name: the null-terminated UTF-8 string of the name tagging that rectangle, up to 63 bytes.
+S:
+: controls the Width/Height fields. If it is 0, there is no Width/Height.
 
-### SMART_TEXTS
+I:
+: controls the ID field. If it is 0, there is no ID filed.
 
+Name Len:
+: the length of the name field, it can between 0 - 63.
+
+ID:
+: the identifier of the rectangle, value is defined by the app.
+
+Left/Top:
+: 2 bytes each, the left top point of the rectangle.
+
+Width/Height:
+: 2 bytes each, the width and height of the rectangle.
+
+Name:
+: the null-terminated UTF-8 string of the name tagging that rectangle, up to 63 bytes.
+
+## SMART_TEXTS
+
+~~~~~~~~~~~
       +---------------+---------------+---------------+---------------+
       |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       |T|   Text Len  |          Time Offset          |     Text      |
       +---------------+---------------+---------------+---------------+
+~~~~~~~~~~~
+{: #message-texts title="SMART_TEXTS Message Format" }
 
 Similar to the SMART_RECTS, each filed of this sub-message is defined as:
 
-    T: control if Time Offset field was present or not,
-    Text Len: the length of the Name field minor 1, the name length can be 1-128,
-    Time Offset: the millisecond time offset corresponding to the timestamp,
-    Text: A string in UTF-8 encoding.
+T:
+: control if Time Offset field was present or not,
 
-## SDP Negotiation
+Text Len:
+: the length of the Name field minor 1, the name length can be 1-128,
+
+Time Offset:
+: the millisecond time offset corresponding to the timestamp,
+
+Text:
+: A string in UTF-8 encoding.
+
+# SDP Negotiation
 
 The message can be sent along with RTP stream as RTP payload, it can also be 
 sent through Data Channel in SCTP.
@@ -232,28 +279,35 @@ Resilience technologies like FEC and RTP retransmission can be used on the
 annotation stream to provide some kind of reliablity when packet loss. Or in
 separate RTP session over realiabe channel like SCTP or TCP. 
 
-### Media Type Registration
+## Media Type Registration
 
 Media type registration is done according to [RFC6838] and [RFC4855].
 
-   Type name: application
-   Subtype name: annotation
+Type name:
+: application
 
-   Required parameters:
-    
-      type: supported sub-message type values, use vertical bar to concatenate, 
+Subtype name:
+: annotation
+
+Required parameters:
+:    
+    type:
+    : supported sub-message type values, use vertical bar to concatenate, 
       for example, type=0|1, means it will generate both SMART_RECTS and 
       SMART_TEXTS. The type indicates how many payloads it could be encoded in 
       the source side.
    
-   Optional parameters:
+    Optional parameters:
+    :  
+        minptime:
+        : the minimum interval of such meta data
+        
+        maxbitrate:
+        : the maximum bitrate of such meta data, in kbps units
       
-      minptime: the minimum interval of such meta data
-      maxbitrate: the maximum bitrate of such meta data, in kbps units
-      
-### Example
+## Example
 
-```   
+~~~~~~~~~~~   
     m=audio 5004 UDP/TLS/RTP/SAVPF 111 104
     c=IN IP4 47.98.240.10
     a=rtcp:9 IN IP4 0.0.0.0
@@ -264,37 +318,38 @@ Media type registration is done according to [RFC6838] and [RFC4855].
     a=fmtp:111 minptime=10;sprop-stereo=0;stereo=0;usedtx=0;useinbandfec=1
     a=rtpmap:104 annotation/1000
     a=fmtp:104 type=0|1;maxbitrate=2
-```
+~~~~~~~~~~~
+{: #sdp-example title="Example SDP Offer with SMART Support" }
 
 In this example, 104 was selected for the media annotation and it will send 
 along with audio stream.
 
-### Send Through Data Channel
+## Send Through Data Channel
 
 TODO?
 
-## RTCWeb implicition
+# RTCWeb implicition
 
 To achieve the synced video annotation, RTCWeb needs to open interface for 
 application operating the rendering of the annotation with the video. Exposure 
 of the video raw data to JS layer and let application renders it with Canvas or 
 WebGL would be a good choice.
 
-## Compatible
+# Compatible
 
 When the legacy endpoints received such an OFFER, it can just ignore the payload.
 
-## Security Considerations
+# Security Considerations
 
 Such meta data could be privacy as the same level of the media, sender can 
 decide to not distribute them. The meta data should be encrypted in the transer 
 and it should also support end to end encription.
 
-## IANA Considerations
+# IANA Considerations
 
 "application/annotation" media type should be registered as defined in [RFC6838].
 
-## Acknowledgements
+# Acknowledgements
 
 
 https://www.iana.org/assignments/media-types/media-types.xhtml

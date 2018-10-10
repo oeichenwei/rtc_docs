@@ -1,0 +1,829 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head profile="http://www.w3.org/2006/03/hcard http://dublincore.org/documents/2008/08/04/dc-html/">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+
+  <title>Simple Media Annotation for Real-Time comunication</title>
+
+  <style type="text/css" title="Xml2Rfc (sans serif)">
+  /*<![CDATA[*/
+	  a {
+	  text-decoration: none;
+	  }
+      /* info code from SantaKlauss at http://www.madaboutstyle.com/tooltip2.html */
+      a.info {
+          /* This is the key. */
+          position: relative;
+          z-index: 24;
+          text-decoration: none;
+      }
+      a.info:hover {
+          z-index: 25;
+          color: #FFF; background-color: #900;
+      }
+      a.info span { display: none; }
+      a.info:hover span.info {
+          /* The span will display just on :hover state. */
+          display: block;
+          position: absolute;
+          font-size: smaller;
+          top: 2em; left: -5em; width: 15em;
+          padding: 2px; border: 1px solid #333;
+          color: #900; background-color: #EEE;
+          text-align: left;
+      }
+	  a.smpl {
+	  color: black;
+	  }
+	  a:hover {
+	  text-decoration: underline;
+	  }
+	  a:active {
+	  text-decoration: underline;
+	  }
+	  address {
+	  margin-top: 1em;
+	  margin-left: 2em;
+	  font-style: normal;
+	  }
+	  body {
+	  color: black;
+	  font-family: verdana, helvetica, arial, sans-serif;
+	  font-size: 10pt;
+	  max-width: 55em;
+	  
+	  }
+	  cite {
+	  font-style: normal;
+	  }
+	  dd {
+	  margin-right: 2em;
+	  }
+	  dl {
+	  margin-left: 2em;
+	  }
+	
+	  ul.empty {
+	  list-style-type: none;
+	  }
+	  ul.empty li {
+	  margin-top: .5em;
+	  }
+	  dl p {
+	  margin-left: 0em;
+	  }
+	  dt {
+	  margin-top: .5em;
+	  }
+	  h1 {
+	  font-size: 14pt;
+	  line-height: 21pt;
+	  page-break-after: avoid;
+	  }
+	  h1.np {
+	  page-break-before: always;
+	  }
+	  h1 a {
+	  color: #333333;
+	  }
+	  h2 {
+	  font-size: 12pt;
+	  line-height: 15pt;
+	  page-break-after: avoid;
+	  }
+	  h3, h4, h5, h6 {
+	  font-size: 10pt;
+	  page-break-after: avoid;
+	  }
+	  h2 a, h3 a, h4 a, h5 a, h6 a {
+	  color: black;
+	  }
+	  img {
+	  margin-left: 3em;
+	  }
+	  li {
+	  margin-left: 2em;
+	  margin-right: 2em;
+	  }
+	  ol {
+	  margin-left: 2em;
+	  margin-right: 2em;
+	  }
+	  ol p {
+	  margin-left: 0em;
+	  }
+	  p {
+	  margin-left: 2em;
+	  margin-right: 2em;
+	  }
+	  pre {
+	  margin-left: 3em;
+	  background-color: lightyellow;
+	  padding: .25em;
+	  }
+	  pre.text2 {
+	  border-style: dotted;
+	  border-width: 1px;
+	  background-color: #f0f0f0;
+	  width: 69em;
+	  }
+	  pre.inline {
+	  background-color: white;
+	  padding: 0em;
+	  }
+	  pre.text {
+	  border-style: dotted;
+	  border-width: 1px;
+	  background-color: #f8f8f8;
+	  width: 69em;
+	  }
+	  pre.drawing {
+	  border-style: solid;
+	  border-width: 1px;
+	  background-color: #f8f8f8;
+	  padding: 2em;
+	  }
+	  table {
+	  margin-left: 2em;
+	  }
+	  table.tt {
+	  vertical-align: top;
+	  }
+	  table.full {
+	  border-style: outset;
+	  border-width: 1px;
+	  }
+	  table.headers {
+	  border-style: outset;
+	  border-width: 1px;
+	  }
+	  table.tt td {
+	  vertical-align: top;
+	  }
+	  table.full td {
+	  border-style: inset;
+	  border-width: 1px;
+	  }
+	  table.tt th {
+	  vertical-align: top;
+	  }
+	  table.full th {
+	  border-style: inset;
+	  border-width: 1px;
+	  }
+	  table.headers th {
+	  border-style: none none inset none;
+	  border-width: 1px;
+	  }
+	  table.left {
+	  margin-right: auto;
+	  }
+	  table.right {
+	  margin-left: auto;
+	  }
+	  table.center {
+	  margin-left: auto;
+	  margin-right: auto;
+	  }
+	  caption {
+	  caption-side: bottom;
+	  font-weight: bold;
+	  font-size: 9pt;
+	  margin-top: .5em;
+	  }
+	
+	  table.header {
+	  border-spacing: 1px;
+	  width: 95%;
+	  font-size: 10pt;
+	  color: white;
+	  }
+	  td.top {
+	  vertical-align: top;
+	  }
+	  td.topnowrap {
+	  vertical-align: top;
+	  white-space: nowrap; 
+	  }
+	  table.header td {
+	  background-color: gray;
+	  width: 50%;
+	  }
+	  table.header a {
+	  color: white;
+	  }
+	  td.reference {
+	  vertical-align: top;
+	  white-space: nowrap;
+	  padding-right: 1em;
+	  }
+	  thead {
+	  display:table-header-group;
+	  }
+	  ul.toc, ul.toc ul {
+	  list-style: none;
+	  margin-left: 1.5em;
+	  margin-right: 0em;
+	  padding-left: 0em;
+	  }
+	  ul.toc li {
+	  line-height: 150%;
+	  font-weight: bold;
+	  font-size: 10pt;
+	  margin-left: 0em;
+	  margin-right: 0em;
+	  }
+	  ul.toc li li {
+	  line-height: normal;
+	  font-weight: normal;
+	  font-size: 9pt;
+	  margin-left: 0em;
+	  margin-right: 0em;
+	  }
+	  li.excluded {
+	  font-size: 0pt;
+	  }
+	  ul p {
+	  margin-left: 0em;
+	  }
+	
+	  .comment {
+	  background-color: yellow;
+	  }
+	  .center {
+	  text-align: center;
+	  }
+	  .error {
+	  color: red;
+	  font-style: italic;
+	  font-weight: bold;
+	  }
+	  .figure {
+	  font-weight: bold;
+	  text-align: center;
+	  font-size: 9pt;
+	  }
+	  .filename {
+	  color: #333333;
+	  font-weight: bold;
+	  font-size: 12pt;
+	  line-height: 21pt;
+	  text-align: center;
+	  }
+	  .fn {
+	  font-weight: bold;
+	  }
+	  .hidden {
+	  display: none;
+	  }
+	  .left {
+	  text-align: left;
+	  }
+	  .right {
+	  text-align: right;
+	  }
+	  .title {
+	  color: #990000;
+	  font-size: 18pt;
+	  line-height: 18pt;
+	  font-weight: bold;
+	  text-align: center;
+	  margin-top: 36pt;
+	  }
+	  .vcardline {
+	  display: block;
+	  }
+	  .warning {
+	  font-size: 14pt;
+	  background-color: yellow;
+	  }
+	
+	
+	  @media print {
+	  .noprint {
+		display: none;
+	  }
+	
+	  a {
+		color: black;
+		text-decoration: none;
+	  }
+	
+	  table.header {
+		width: 90%;
+	  }
+	
+	  td.header {
+		width: 50%;
+		color: black;
+		background-color: white;
+		vertical-align: top;
+		font-size: 12pt;
+	  }
+	
+	  ul.toc a::after {
+		content: leader('.') target-counter(attr(href), page);
+	  }
+	
+	  ul.ind li li a {
+		content: target-counter(attr(href), page);
+	  }
+	
+	  .print2col {
+		column-count: 2;
+		-moz-column-count: 2;
+		column-fill: auto;
+	  }
+	  }
+	
+	  @page {
+	  @top-left {
+		   content: "Internet-Draft"; 
+	  } 
+	  @top-right {
+		   content: "December 2010"; 
+	  } 
+	  @top-center {
+		   content: "Abbreviated Title";
+	  } 
+	  @bottom-left {
+		   content: "Doe"; 
+	  } 
+	  @bottom-center {
+		   content: "Expires June 2011"; 
+	  } 
+	  @bottom-right {
+		   content: "[Page " counter(page) "]"; 
+	  } 
+	  }
+	
+	  @page:first { 
+		@top-left {
+		  content: normal;
+		}
+		@top-right {
+		  content: normal;
+		}
+		@top-center {
+		  content: normal;
+		}
+	  }
+  /*]]>*/
+  </style>
+
+  <link href="#rfc.toc" rel="Contents">
+<link href="#rfc.section.1" rel="Chapter" title="1 Introduction">
+<link href="#rfc.section.2" rel="Chapter" title="2 Message Format">
+<link href="#rfc.section.2.1" rel="Chapter" title="2.1 Sub-message common header">
+<link href="#rfc.section.2.2" rel="Chapter" title="2.2 SMART_RECTS">
+<link href="#rfc.section.2.3" rel="Chapter" title="2.3 SMART_TEXTS">
+<link href="#rfc.section.3" rel="Chapter" title="3 SDP Negotiation">
+<link href="#rfc.section.3.1" rel="Chapter" title="3.1 Media Type Registration">
+<link href="#rfc.section.3.2" rel="Chapter" title="3.2 Example">
+<link href="#rfc.section.3.3" rel="Chapter" title="3.3 Send Through Data Channel">
+<link href="#rfc.section.4" rel="Chapter" title="4 RTCWeb implicition">
+<link href="#rfc.section.5" rel="Chapter" title="5 Compatible">
+<link href="#rfc.section.6" rel="Chapter" title="6 Security Considerations">
+<link href="#rfc.section.7" rel="Chapter" title="7 IANA Considerations">
+<link href="#rfc.section.8" rel="Chapter" title="8 Acknowledgements">
+<link href="#rfc.references" rel="Chapter" title="9 References">
+<link href="#rfc.references.1" rel="Chapter" title="9.1 Normative References">
+<link href="#rfc.references.2" rel="Chapter" title="9.2 Informative References">
+<link href="#rfc.authors" rel="Chapter">
+
+
+  <meta name="generator" content="xml2rfc version 2.11.0 - https://tools.ietf.org/tools/xml2rfc" />
+  <link rel="schema.dct" href="http://purl.org/dc/terms/" />
+
+  <meta name="dct.creator" content="Chen, W., Ed. and J. Fu, Ed." />
+  <meta name="dct.identifier" content="urn:ietf:id:draft-chen-mmusic-smart-00.txt" />
+  <meta name="dct.issued" scheme="ISO8601" content="2018-10-10" />
+  <meta name="dct.abstract" content="While AI technology arising, automatical video annotation, speech transcription and similar such technologies are becoming mature. This document proposes one solution to transfer and sync such meta data along the media in the context of RTCWeb." />
+  <meta name="description" content="While AI technology arising, automatical video annotation, speech transcription and similar such technologies are becoming mature. This document proposes one solution to transfer and sync such meta data along the media in the context of RTCWeb." />
+
+</head>
+
+<body>
+
+  <table class="header">
+    <tbody>
+    
+    	<tr>
+<td class="left">mmusic</td>
+<td class="right">W. Chen, Ed.</td>
+</tr>
+<tr>
+<td class="left">Internet-Draft</td>
+<td class="right">CVTE</td>
+</tr>
+<tr>
+<td class="left">Intended status: Standards Track</td>
+<td class="right">J. Fu, Ed.</td>
+</tr>
+<tr>
+<td class="left">Expires: April 13, 2019</td>
+<td class="right">Cisco</td>
+</tr>
+<tr>
+<td class="left"></td>
+<td class="right">October 10, 2018</td>
+</tr>
+
+    	
+    </tbody>
+  </table>
+
+  <p class="title">Simple Media Annotation for Real-Time comunication<br />
+  <span class="filename">draft-chen-mmusic-smart-00.txt</span></p>
+  
+  <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
+<p>While AI technology arising, automatical video annotation, speech transcription and similar such technologies are becoming mature. This document proposes one solution to transfer and sync such meta data along the media in the context of RTCWeb.</p>
+<h1 id="rfc.status"><a href="#rfc.status">Status of This Memo</a></h1>
+<p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
+<p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
+<p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
+<p>This Internet-Draft will expire on April 13, 2019.</p>
+<h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
+<p>Copyright (c) 2018 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
+<p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
+
+  
+  <hr class="noprint" />
+  <h1 class="np" id="rfc.toc"><a href="#rfc.toc">Table of Contents</a></h1>
+  <ul class="toc">
+
+  	<li>1.   <a href="#rfc.section.1">Introduction</a>
+</li>
+<li>2.   <a href="#rfc.section.2">Message Format</a>
+</li>
+<ul><li>2.1.   <a href="#rfc.section.2.1">Sub-message common header</a>
+</li>
+<li>2.2.   <a href="#rfc.section.2.2">SMART_RECTS</a>
+</li>
+<li>2.3.   <a href="#rfc.section.2.3">SMART_TEXTS</a>
+</li>
+</ul><li>3.   <a href="#rfc.section.3">SDP Negotiation</a>
+</li>
+<ul><li>3.1.   <a href="#rfc.section.3.1">Media Type Registration</a>
+</li>
+<li>3.2.   <a href="#rfc.section.3.2">Example</a>
+</li>
+<li>3.3.   <a href="#rfc.section.3.3">Send Through Data Channel</a>
+</li>
+</ul><li>4.   <a href="#rfc.section.4">RTCWeb implicition</a>
+</li>
+<li>5.   <a href="#rfc.section.5">Compatible</a>
+</li>
+<li>6.   <a href="#rfc.section.6">Security Considerations</a>
+</li>
+<li>7.   <a href="#rfc.section.7">IANA Considerations</a>
+</li>
+<li>8.   <a href="#rfc.section.8">Acknowledgements</a>
+</li>
+<li>9.   <a href="#rfc.references">References</a>
+</li>
+<ul><li>9.1.   <a href="#rfc.references.1">Normative References</a>
+</li>
+<li>9.2.   <a href="#rfc.references.2">Informative References</a>
+</li>
+</ul><li><a href="#rfc.authors">Authors' Addresses</a>
+</li>
+
+
+  </ul>
+
+  <h1 id="rfc.section.1">
+<a href="#rfc.section.1">1.</a> <a href="#introduction" id="introduction">Introduction</a>
+</h1>
+<p id="rfc.section.1.p.1">Nowdays, face tracking and face recognition have already made a great progress and are widely adopted. Face tracking can be used to smart cropping of the video avoiding the face being cut, face recognition can be used to identify who are engaged in the communication by labelling the name in the video. Speech recognition technology becomes mature too, it is not surprised that speech can be automatically transcribed to text and assist the real time communications. AI technology can be applied to other use cases, like object tracking, emotion detecting, simultaneous translation and so on.</p>
+<div id="rfc.figure.1"></div>
+<div id="center-topo"></div>
+<pre>
+                        +-----------------+
+            +---------&gt; | Media Processor +------------+
+            |           +-----------------+            |
+            |                                          |
+            |                                          |
+            |                                          |
+            |                                          |
+        +----+----+                               +-----v----+
+        | Sender  |                               | Receiver |
+        +---------+                               +----------+
+</pre>
+<p class="figure">Figure 1: Vanallia Media Flow Topology</p>
+<p id="rfc.section.1.p.2">In a real-time communication scenario like in <a href="#center-topo" class="xref">Figure 1</a>, these intellegent processing can be done at sender, media processor or receiver.  The advantage of doing it at receiver or media processor was backward compatibility but there are also disadvantages:</p>
+<p></p>
+
+<ol>
+<li>the media quality might degrade due to packet loss or delay on the network.</li>
+<li>either all receivers needs to repeat the computation or extra server resources are required to compute it.</li>
+<li>some meta data could be captured only on source side, for example, iPhone 3D camera could help extract more information than pure image processing.</li>
+</ol>
+<p id="rfc.section.1.p.4">This document will focus on methods to capture the media meta data at sender side and define how to transfer them along with media data to the receiver.</p>
+<p id="rfc.section.1.p.5">Mixing the meta data with media at the sender is one way to convey them to receivers , but there are some drawbacks, take compositing annotation text onto the source picture as an example:</p>
+<p></p>
+
+<ol>
+<li>If the video was degraded due to network, the text will be unclear.</li>
+<li>The receiver can not turn on/off the annotation on-demand.</li>
+<li>The receiver can not customize the utilization of such meta data.</li>
+</ol>
+<p id="rfc.section.1.p.7">This document proposes a new out-of-band payload to transfer them and synchornize them through timestamp at receiver, rather than extending the current media payloads:</p>
+<p></p>
+
+<ol>
+<li>It is easier to achieve backward compatiblity.</li>
+<li>The transportation of the meta data could be different from the media.  For example, the face tracking information could be combined with the audio transcribed text and render together.</li>
+</ol>
+<p id="rfc.section.1.p.9">The mechanism described in this document can also be used to transfer other media meta data. For example, for dekstop sharing case, the mouse moving events can be transfered separately in this format, and we can achieve higher frame rate of mouse movement than the screen content.</p>
+<h1 id="rfc.section.2">
+<a href="#rfc.section.2">2.</a> <a href="#message-format" id="message-format">Message Format</a>
+</h1>
+<div id="rfc.figure.2"></div>
+<div id="message-common-hdr"></div>
+<pre>
+                    +---------------+---------------+
+                    |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
+                    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                    | V |   RES | P |      Count    |
+                    +---+-------+---+---------------+
+</pre>
+<p class="figure">Figure 2: Common Message Header</p>
+<p id="rfc.section.2.p.1">The message will have 2 bytes header followed with an array of sub-messages.  All sub-messages share the same common header as in <a href="#message-common-hdr" class="xref">Figure 2</a>.</p>
+<p></p>
+
+<dl>
+<dt>V:</dt>
+<dd style="margin-left: 8">Version. The version of this message, it should be set to 0.</dd>
+<dt>RES:</dt>
+<dd style="margin-left: 8">Reserved. The reserved field, should be set to 0 now.</dd>
+<dt>P:</dt>
+<dd style="margin-left: 8">Priority. The priority of the message, lower priority packets can be dropped or delayed.</dd>
+<dt>Count:</dt>
+<dd style="margin-left: 8">Count. The number of sub-messages embedded. There at least one submessage embedded, so the count plus one is the actual number of sub-messages.</dd>
+</dl>
+<h1 id="rfc.section.2.1">
+<a href="#rfc.section.2.1">2.1.</a> <a href="#sub-message-common-header" id="sub-message-common-header">Sub-message common header</a>
+</h1>
+<div id="rfc.figure.3"></div>
+<div id="submessage-fmt"></div>
+<pre>
+      +---------------+---------------+---------------+---------------+
+      |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |     Type      |     Len       |              SSRC             |
+      +---------------+---------------+---------------+---------------+
+      |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |            ...SSRC            |          Timestamp            |
+      +---------------+---------------+---------------+---------------+
+      |       ...Timestamp            |
+      +---------------+---------------+
+</pre>
+<p class="figure">Figure 3: General Sub-message Format</p>
+<p id="rfc.section.2.1.p.1">Each sub-message will have at least 10 bytes headers, the details are:</p>
+<p></p>
+
+<dl>
+<dt>Type:</dt>
+<dd style="margin-left: 8">one-byte pre-defined sub-message type, see table 1.</dd>
+<dt>Len:</dt>
+<dd style="margin-left: 8">the length of the sub-message, not including the common header, in bytes</dd>
+<dt>SSRC:</dt>
+<dd style="margin-left: 8">4 bytes, the SSRC of the corresponding source</dd>
+<dt>Timestamp:</dt>
+<dd style="margin-left: 8">4 bytes, the timestamp of the corresponding source</dd>
+</dl>
+<p id="rfc.section.2.1.p.3">This document defines 2 sub-message types and they can be extended in future.</p>
+<div id="rfc.figure.4"></div>
+<div id="message-type"></div>
+<pre>
+            +------------------+----------+
+            |    Sub-message   |   Value  |  
+            +------------------+----------+
+            |  SMART_RECTS     |     0    |
+            +------------------+----------+
+            |  SMART_TEXTS     |     1    |
+            +------------------+----------+
+</pre>
+<p class="figure">Figure 4: Pre-defined Message Types</p>
+<h1 id="rfc.section.2.2">
+<a href="#rfc.section.2.2">2.2.</a> <a href="#smartrects" id="smartrects">SMART_RECTS</a>
+</h1>
+<div id="rfc.figure.5"></div>
+<div id="message-rects"></div>
+<pre>
+      +---------------+---------------+---------------+---------------+
+      |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |S|I| Name Len  |               ID              |       Left    |
+      +---------------+---------------+---------------+---------------+
+      |    ...Lef     |             Top               |      Width    |
+      +---------------+---------------+---------------+---------------+
+      |    ...Width   |            Height             |     Name      |
+      +---------------+---------------+---------------+---------------+
+</pre>
+<p class="figure">Figure 5: SMART_RECTS Message Format</p>
+<p id="rfc.section.2.2.p.1">This pattern can be repeated, the total number of rectangles could be determined from the length field of the sub-message common header. Each filed of this sub-message is defined as:</p>
+<p></p>
+
+<dl>
+<dt>S:</dt>
+<dd style="margin-left: 8">controls the Width/Height fields. If it is 0, there is no Width/Height.</dd>
+<dt>I:</dt>
+<dd style="margin-left: 8">controls the ID field. If it is 0, there is no ID filed.</dd>
+<dt>Name Len:</dt>
+<dd style="margin-left: 8">the length of the name field, it can between 0 - 63.</dd>
+<dt>ID:</dt>
+<dd style="margin-left: 8">the identifier of the rectangle, value is defined by the app.</dd>
+<dt>Left/Top:</dt>
+<dd style="margin-left: 8">2 bytes each, the left top point of the rectangle.</dd>
+<dt>Width/Height:</dt>
+<dd style="margin-left: 8">2 bytes each, the width and height of the rectangle.</dd>
+<dt>Name:</dt>
+<dd style="margin-left: 8">the null-terminated UTF-8 string of the name tagging that rectangle, up to 63 bytes.</dd>
+</dl>
+<h1 id="rfc.section.2.3">
+<a href="#rfc.section.2.3">2.3.</a> <a href="#smarttexts" id="smarttexts">SMART_TEXTS</a>
+</h1>
+<div id="rfc.figure.6"></div>
+<div id="message-texts"></div>
+<pre>
+      +---------------+---------------+---------------+---------------+
+      |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
+      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      |T|   Text Len  |          Time Offset          |     Text      |
+      +---------------+---------------+---------------+---------------+
+</pre>
+<p class="figure">Figure 6: SMART_TEXTS Message Format</p>
+<p id="rfc.section.2.3.p.1">Similar to the SMART_RECTS, each filed of this sub-message is defined as:</p>
+<p></p>
+
+<dl>
+<dt>T:</dt>
+<dd style="margin-left: 8">control if Time Offset field was present or not,</dd>
+<dt>Text Len:</dt>
+<dd style="margin-left: 8">the length of the Name field minor 1, the name length can be 1-128,</dd>
+<dt>Time Offset:</dt>
+<dd style="margin-left: 8">the millisecond time offset corresponding to the timestamp,</dd>
+<dt>Text:</dt>
+<dd style="margin-left: 8">A string in UTF-8 encoding.</dd>
+</dl>
+<h1 id="rfc.section.3">
+<a href="#rfc.section.3">3.</a> <a href="#sdp-negotiation" id="sdp-negotiation">SDP Negotiation</a>
+</h1>
+<p id="rfc.section.3.p.1">The message can be sent along with RTP stream as RTP payload, it can also be sent through Data Channel in SCTP.</p>
+<p id="rfc.section.3.p.2">When it is sent through RTP stream, it can be multiplexed with either Audio or Video stream with its own sequence space and separate SSRC, the payload type can be negotiated with dynamic payloads.</p>
+<p id="rfc.section.3.p.3">Resilience technologies like FEC and RTP retransmission can be used on the annotation stream to provide some kind of reliablity when packet loss. Or in separate RTP session over realiabe channel like SCTP or TCP.</p>
+<h1 id="rfc.section.3.1">
+<a href="#rfc.section.3.1">3.1.</a> <a href="#media-type-registration" id="media-type-registration">Media Type Registration</a>
+</h1>
+<p id="rfc.section.3.1.p.1">Media type registration is done according to <a href="#RFC6838" class="xref">[RFC6838]</a> and <a href="#RFC4855" class="xref">[RFC4855]</a>.</p>
+<p></p>
+
+<dl>
+<dt>Type name:</dt>
+<dd style="margin-left: 8">application</dd>
+<dt>Subtype name:</dt>
+<dd style="margin-left: 8">annotation</dd>
+<dt>Required parameters:</dt>
+<dd style="margin-left: 8">
+<dl>
+<dt>type:</dt>
+<dd style="margin-left: 8">supported sub-message type values, use vertical bar to concatenate, for example, type=0|1, means it will generate both SMART_RECTS and SMART_TEXTS. The type indicates how many payloads it could be encoded in the source side.</dd>
+<dt>Optional parameters:</dt>
+<dd style="margin-left: 8">
+<dl>
+<dt>minptime:</dt>
+<dd style="margin-left: 8">the minimum interval of such meta data</dd>
+<dt>maxbitrate:</dt>
+<dd style="margin-left: 8">the maximum bitrate of such meta data, in kbps units</dd>
+</dl>
+<p> </p>
+</dd>
+</dl>
+<p> </p>
+</dd>
+</dl>
+<h1 id="rfc.section.3.2">
+<a href="#rfc.section.3.2">3.2.</a> <a href="#example" id="example">Example</a>
+</h1>
+<div id="rfc.figure.7"></div>
+<div id="sdp-example"></div>
+<pre>
+    m=audio 5004 UDP/TLS/RTP/SAVPF 111 104
+    c=IN IP4 47.98.240.10
+    a=rtcp:9 IN IP4 0.0.0.0
+    a=mid:audio
+    a=sendrecv
+    a=rtcp-mux
+    a=rtpmap:111 opus/48000/2
+    a=fmtp:111 minptime=10;sprop-stereo=0;stereo=0;usedtx=0;useinbandfec=1
+    a=rtpmap:104 annotation/1000
+    a=fmtp:104 type=0|1;maxbitrate=2
+</pre>
+<p class="figure">Figure 7: Example SDP Offer with SMART Support</p>
+<p id="rfc.section.3.2.p.1">In this example, 104 was selected for the media annotation and it will send along with audio stream.</p>
+<h1 id="rfc.section.3.3">
+<a href="#rfc.section.3.3">3.3.</a> <a href="#send-through-data-channel" id="send-through-data-channel">Send Through Data Channel</a>
+</h1>
+<p id="rfc.section.3.3.p.1">TODO?</p>
+<h1 id="rfc.section.4">
+<a href="#rfc.section.4">4.</a> <a href="#rtcweb-implicition" id="rtcweb-implicition">RTCWeb implicition</a>
+</h1>
+<p id="rfc.section.4.p.1">To achieve the synced video annotation, RTCWeb needs to open interface for application operating the rendering of the annotation with the video. Exposure of the video raw data to JS layer and let application renders it with Canvas or WebGL would be a good choice.</p>
+<h1 id="rfc.section.5">
+<a href="#rfc.section.5">5.</a> <a href="#compatible" id="compatible">Compatible</a>
+</h1>
+<p id="rfc.section.5.p.1">When the legacy endpoints received such an OFFER, it can just ignore the payload.</p>
+<h1 id="rfc.section.6">
+<a href="#rfc.section.6">6.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
+</h1>
+<p id="rfc.section.6.p.1">Such meta data could be privacy as the same level of the media, sender can decide to not distribute them. The meta data should be encrypted in the transer and it should also support end to end encription.</p>
+<h1 id="rfc.section.7">
+<a href="#rfc.section.7">7.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
+</h1>
+<p id="rfc.section.7.p.1">"application/annotation" media type should be registered as defined in <a href="#RFC6838" class="xref">[RFC6838]</a>.</p>
+<h1 id="rfc.section.8">
+<a href="#rfc.section.8">8.</a> <a href="#acknowledgements" id="acknowledgements">Acknowledgements</a>
+</h1>
+<p id="rfc.section.8.p.1">https://www.iana.org/assignments/media-types/media-types.xhtml</p>
+<p id="rfc.section.8.p.2">http://asciiflow.com/</p>
+<h1 id="rfc.references">
+<a href="#rfc.references">9.</a> References</h1>
+<h1 id="rfc.references.1">
+<a href="#rfc.references.1">9.1.</a> Normative References</h1>
+<table><tbody>
+<tr>
+<td class="reference"><b id="RFC4855">[RFC4855]</b></td>
+<td class="top">
+<a>Casner, S.</a>, "<a href="https://tools.ietf.org/html/rfc4855">Media Type Registration of RTP Payload Formats</a>", RFC 4855, DOI 10.17487/RFC4855, February 2007.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC6838">[RFC6838]</b></td>
+<td class="top">
+<a>Freed, N.</a>, <a>Klensin, J.</a> and <a>T. Hansen</a>, "<a href="https://tools.ietf.org/html/rfc6838">Media Type Specifications and Registration Procedures</a>", BCP 13, RFC 6838, DOI 10.17487/RFC6838, January 2013.</td>
+</tr>
+</tbody></table>
+<h1 id="rfc.references.2">
+<a href="#rfc.references.2">9.2.</a> Informative References</h1>
+<table><tbody><tr>
+<td class="reference"><b id="REST">[REST]</b></td>
+<td class="top">
+<a title="University of California, Irvine">Fielding, R.</a>, "<a>Architectural Styles and the Design of Network-based Software Architectures</a>", 2000.</td>
+</tr></tbody></table>
+<h1 id="rfc.authors"><a href="#rfc.authors">Authors' Addresses</a></h1>
+<div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Wei Chen</span> (editor)
+	  <span class="n hidden">
+		<span class="family-name">Chen</span>
+	  </span>
+	</span>
+	<span class="org vcardline">CVTE</span>
+	<span class="adr">
+	  <span class="vcardline">Gudang</span>
+
+	  <span class="vcardline">
+		<span class="locality">HangZhou</span>,  
+		<span class="region"></span>
+		<span class="code">320012</span>
+	  </span>
+	  <span class="country-name vcardline">China</span>
+	</span>
+	<span class="vcardline">Phone: +86-013858060444</span>
+
+<span class="vcardline">EMail: <a href="mailto:oeichenwei@gmail.com">oeichenwei@gmail.com</a></span>
+
+  </address>
+</div><div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Jeromy Fu</span> (editor)
+	  <span class="n hidden">
+		<span class="family-name">Fu</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Cisco</span>
+	<span class="adr">
+	  <span class="vcardline">Tasman</span>
+
+	  <span class="vcardline">
+		<span class="locality">San Jose</span>,  
+		<span class="region"></span>
+		<span class="code">88600</span>
+	  </span>
+	  <span class="country-name vcardline">USA</span>
+	</span>
+	<span class="vcardline">Phone: +358407796297</span>
+
+<span class="vcardline">EMail: <a href="mailto:jeromyf@cisco.com">jeromyf@cisco.com</a></span>
+
+  </address>
+</div>
+
+</body>
+</html>
