@@ -32,31 +32,21 @@ author:
         email: oeichenwei@gmail.com
       -
         ins: J. Fu
-        name: Jeromy Fu
-        org: Cisco
+        name: Jiantao Fu
+        org: Cisco Systems, Inc.
         role: editor
-        street: Tasman
-        city: San Jose
-        code: 88600
+        street: 771 Alder Dr
+        city: Milpitas
+        code: 95035
         country: USA
-        phone: "+358407796297"
-        email: jeromyf@cisco.com
+        phone: "+1-510-403-5644"
+        email: jianfu@cisco.com
 
 normative:
   RFC6838:
   RFC4855:
 
-informative:
-  REST:
-    title: Architectural Styles and the Design of Network-based Software Architectures
-    author:
-#      -
-        ins: R. Fielding
-        name: Roy Fielding
-        org: University of California, Irvine
-    date: 2000
-    
-  
+
 --- abstract
 
 While AI technology arising, automatical video annotation, speech transcription
@@ -86,7 +76,7 @@ to other use cases, like object tracking, emotion detecting, simultaneous transl
         | Sender  |                               | Receiver |
         +---------+                               +----------+
 ~~~~~~~~~~~
-{: #center-topo title="Vanallia Media Flow Topology" }
+{: #center-topo title="Media Flow Topology" }
                           
   In a real-time communication scenario like in {{center-topo}}, these intellegent 
 processing can be done at sender, media processor or receiver. 
@@ -126,7 +116,7 @@ payloads:
      transcribed text and render together.
 
 The mechanism described in this document can also be used to transfer other 
-media meta data. For example, for dekstop sharing case, the mouse moving events 
+media meta data. For example, for dekstop sharing case, the mouse movement events
 can be transfered separately in this format, and we can achieve higher 
 frame rate of mouse movement than the screen content.
 
@@ -209,7 +199,7 @@ This document defines 2 sub-message types and they can be extended in future.
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
       |S|I| Name Len  |               ID              |       Left    |
       +---------------+---------------+---------------+---------------+
-      |    ...Lef     |             Top               |      Width    |
+      |    ...Left    |             Top               |      Width    |
       +---------------+---------------+---------------+---------------+
       |    ...Width   |            Height             |     Name      |
       +---------------+---------------+---------------+---------------+
@@ -255,13 +245,13 @@ Name:
 Similar to the SMART_RECTS, each filed of this sub-message is defined as:
 
 T:
-: control if Time Offset field was present or not,
+: control if Time Offset field is present or not,
 
 Text Len:
-: the length of the Name field minor 1, the name length can be 1-128,
+: the length of the Name field minor 1, the name length can be 1~128,
 
 Time Offset:
-: the millisecond time offset corresponding to the timestamp,
+: the millisecond time offset corresponding to the timestamp in common header,
 
 Text:
 : A string in UTF-8 encoding.
@@ -300,7 +290,7 @@ Required parameters:
     Optional parameters:
     :  
         minptime:
-        : the minimum interval of such meta data
+        : the minimum interval of such meta data, in milliseconds
         
         maxbitrate:
         : the maximum bitrate of such meta data, in kbps units
@@ -317,7 +307,7 @@ Required parameters:
     a=rtpmap:111 opus/48000/2
     a=fmtp:111 minptime=10;sprop-stereo=0;stereo=0;usedtx=0;useinbandfec=1
     a=rtpmap:104 annotation/1000
-    a=fmtp:104 type=0|1;maxbitrate=2
+    a=fmtp:104 type=1;maxbitrate=2
 ~~~~~~~~~~~
 {: #sdp-example title="Example SDP Offer with SMART Support" }
 
