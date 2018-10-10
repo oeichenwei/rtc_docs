@@ -4,6 +4,7 @@ TEXT=${SOURCES:.mkd=.txt}
 HTML=${SOURCES:.mkd=.html}
 XML=${SOURCES:.mkd=.xml}
 
+all: text html xml
 text:	$(TEXT)
 html: $(HTML)
 xml: $(XML)
@@ -18,3 +19,6 @@ xml: $(XML)
 
 %.txt:	%.xml
 	xml2rfc  $< $@
+
+clean:
+	rm *.txt *.html *.xml

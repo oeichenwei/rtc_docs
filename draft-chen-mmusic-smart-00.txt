@@ -5,7 +5,7 @@
 mmusic                                                      W. Chen, Ed.
 Internet-Draft                                                      CVTE
 Intended status: Standards Track                              J. Fu, Ed.
-Expires: April 13, 2019                                            Cisco
+Expires: April 13, 2019                              Cisco Systems, Inc.
                                                         October 10, 2018
 
 
@@ -70,13 +70,11 @@ Table of Contents
      3.2.  Example . . . . . . . . . . . . . . . . . . . . . . . . .   7
      3.3.  Send Through Data Channel . . . . . . . . . . . . . . . .   7
    4.  RTCWeb implicition  . . . . . . . . . . . . . . . . . . . . .   7
-   5.  Compatible  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+   5.  Compatible  . . . . . . . . . . . . . . . . . . . . . . . . .   8
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
    8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
-   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     9.1.  Normative References  . . . . . . . . . . . . . . . . . .   8
-     9.2.  Informative References  . . . . . . . . . . . . . . . . .   8
+   9.  Normative References  . . . . . . . . . . . . . . . . . . . .   8
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  Introduction
@@ -103,8 +101,10 @@ Table of Contents
            | Sender  |                               | Receiver |
            +---------+                               +----------+
 
-                  Figure 1: Vanallia Media Flow Topology
+                       Figure 1: Media Flow Topology
 
+   In a real-time communication scenario like in Figure 1, these
+   intellegent processing can be done at sender, media processor or
 
 
 
@@ -114,8 +114,6 @@ Chen & Fu                Expires April 13, 2019                 [Page 2]
 Internet-Draft                    SMART                     October 2018
 
 
-   In a real-time communication scenario like in Figure 1, these
-   intellegent processing can be done at sender, media processor or
    receiver.  The advantage of doing it at receiver or media processor
    was backward compatibility but there are also disadvantages:
 
@@ -156,9 +154,11 @@ Internet-Draft                    SMART                     October 2018
 
    The mechanism described in this document can also be used to transfer
    other media meta data.  For example, for dekstop sharing case, the
-   mouse moving events can be transfered separately in this format, and
-   we can achieve higher frame rate of mouse movement than the screen
-   content.
+   mouse movement events can be transfered separately in this format,
+   and we can achieve higher frame rate of mouse movement than the
+   screen content.
+
+
 
 
 
@@ -250,7 +250,7 @@ Internet-Draft                    SMART                     October 2018
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |S|I| Name Len  |               ID              |       Left    |
        +---------------+---------------+---------------+---------------+
-       |    ...Lef     |             Top               |      Width    |
+       |    ...Left    |             Top               |      Width    |
        +---------------+---------------+---------------+---------------+
        |    ...Width   |            Height             |     Name      |
        +---------------+---------------+---------------+---------------+
@@ -298,13 +298,13 @@ Internet-Draft                    SMART                     October 2018
    Similar to the SMART_RECTS, each filed of this sub-message is defined
    as:
 
-   T: control if Time Offset field was present or not,
+   T: control if Time Offset field is present or not,
 
    Text Len:  the length of the Name field minor 1, the name length can
-      be 1-128,
+      be 1~128,
 
    Time Offset:  the millisecond time offset corresponding to the
-      timestamp,
+      timestamp in common header,
 
    Text:  A string in UTF-8 encoding.
 
@@ -347,7 +347,8 @@ Internet-Draft                    SMART                     October 2018
 
       Optional parameters:
 
-         minptime:  the minimum interval of such meta data
+         minptime:  the minimum interval of such meta data, in
+            milliseconds
 
          maxbitrate:  the maximum bitrate of such meta data, in kbps
             units
@@ -363,7 +364,7 @@ Internet-Draft                    SMART                     October 2018
     a=rtpmap:111 opus/48000/2
     a=fmtp:111 minptime=10;sprop-stereo=0;stereo=0;usedtx=0;useinbandfec=1
     a=rtpmap:104 annotation/1000
-    a=fmtp:104 type=0|1;maxbitrate=2
+    a=fmtp:104 type=1;maxbitrate=2
 
               Figure 7: Example SDP Offer with SMART Support
 
@@ -381,10 +382,9 @@ Internet-Draft                    SMART                     October 2018
    with the video.  Exposure of the video raw data to JS layer and let
    application renders it with Canvas or WebGL would be a good choice.
 
-5.  Compatible
 
-   When the legacy endpoints received such an OFFER, it can just ignore
-   the payload.
+
+
 
 
 
@@ -393,6 +393,11 @@ Chen & Fu                Expires April 13, 2019                 [Page 7]
 
 Internet-Draft                    SMART                     October 2018
 
+
+5.  Compatible
+
+   When the legacy endpoints received such an OFFER, it can just ignore
+   the payload.
 
 6.  Security Considerations
 
@@ -412,9 +417,7 @@ Internet-Draft                    SMART                     October 2018
 
    http://asciiflow.com/
 
-9.  References
-
-9.1.  Normative References
+9.  Normative References
 
    [RFC4855]  Casner, S., "Media Type Registration of RTP Payload
               Formats", RFC 4855, DOI 10.17487/RFC4855, February 2007,
@@ -424,11 +427,6 @@ Internet-Draft                    SMART                     October 2018
               Specifications and Registration Procedures", BCP 13,
               RFC 6838, DOI 10.17487/RFC6838, January 2013,
               <https://www.rfc-editor.org/info/rfc6838>.
-
-9.2.  Informative References
-
-   [REST]     Fielding, R., "Architectural Styles and the Design of
-              Network-based Software Architectures", 2000.
 
 Authors' Addresses
 
@@ -445,19 +443,21 @@ Authors' Addresses
 
 
 
+
+
 Chen & Fu                Expires April 13, 2019                 [Page 8]
 
 Internet-Draft                    SMART                     October 2018
 
 
-   Jeromy Fu (editor)
-   Cisco
-   Tasman
-   San Jose  88600
+   Jiantao Fu (editor)
+   Cisco Systems, Inc.
+   771 Alder Dr
+   Milpitas  95035
    USA
 
-   Phone: +358407796297
-   Email: jeromyf@cisco.com
+   Phone: +1-510-403-5644
+   Email: jianfu@cisco.com
 
 
 
