@@ -2,9 +2,9 @@
 
 
 
-mmusic                                                      W. Chen, Ed.
+mmusic                                                           W. Chen
 Internet-Draft                                                      CVTE
-Intended status: Standards Track                              J. Fu, Ed.
+Intended status: Standards Track                                   J. Fu
 Expires: April 13, 2019                              Cisco Systems, Inc.
                                                         October 10, 2018
 
@@ -64,18 +64,19 @@ Table of Contents
    2.  Message Format  . . . . . . . . . . . . . . . . . . . . . . .   4
      2.1.  Sub-message common header . . . . . . . . . . . . . . . .   4
      2.2.  SMART_RECTS . . . . . . . . . . . . . . . . . . . . . . .   5
-     2.3.  SMART_TEXTS . . . . . . . . . . . . . . . . . . . . . . .   6
    3.  SDP Negotiation . . . . . . . . . . . . . . . . . . . . . . .   6
      3.1.  Media Type Registration . . . . . . . . . . . . . . . . .   6
      3.2.  Example . . . . . . . . . . . . . . . . . . . . . . . . .   7
      3.3.  Send Through Data Channel . . . . . . . . . . . . . . . .   7
-   4.  RTCWeb implicition  . . . . . . . . . . . . . . . . . . . . .   7
+   4.  Synchronize with Media  . . . . . . . . . . . . . . . . . . .   7
+     4.1.  Render a Media Annotation Frame . . . . . . . . . . . . .   8
+     4.2.  RTCWeb implicition  . . . . . . . . . . . . . . . . . . .   8
    5.  Compatible  . . . . . . . . . . . . . . . . . . . . . . . . .   8
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
    7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
-   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
-   9.  Normative References  . . . . . . . . . . . . . . . . . . . .   8
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
+   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
+   9.  Normative References  . . . . . . . . . . . . . . . . . . . .   9
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
 
 1.  Introduction
 
@@ -105,7 +106,6 @@ Table of Contents
 
    In a real-time communication scenario like in Figure 1, these
    intellegent processing can be done at sender, media processor or
-
 
 
 
@@ -226,20 +226,21 @@ Chen & Fu                Expires April 13, 2019                 [Page 4]
 Internet-Draft                    SMART                     October 2018
 
 
-   SSRC:  4 bytes, the SSRC of the corresponding source
+   SSRC:  4 bytes, the SSRC of the corresponding video stream even when
+      this payload is generated from an audio stream.  The annotation
+      should be rendered to the corresponding video stream.
 
-   Timestamp:  4 bytes, the timestamp of the corresponding source
+   Timestamp:  4 bytes, the same [RFC3550] RTP timestamp space as the
+      corresponding video stream.
 
-   This document defines 2 sub-message types and they can be extended in
+   This document defines 1 sub-message type and they can be extended in
    future.
 
-               +------------------+----------+
-               |    Sub-message   |   Value  |
-               +------------------+----------+
-               |  SMART_RECTS     |     0    |
-               +------------------+----------+
-               |  SMART_TEXTS     |     1    |
-               +------------------+----------+
+                   +------------------+----------+
+                   |    Sub-message   |   Value  |
+                   +------------------+----------+
+                   |  SMART_RECTS     |     0    |
+                   +------------------+----------+
 
                     Figure 4: Pre-defined Message Types
 
@@ -248,11 +249,13 @@ Internet-Draft                    SMART                     October 2018
        +---------------+---------------+---------------+---------------+
        |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |S|I| Name Len  |               ID              |       Left    |
+       |S|I|P|T|  RES  |   Name Len    |               ID              |
        +---------------+---------------+---------------+---------------+
-       |    ...Left    |             Top               |      Width    |
+       |             Left              |             Top               |
        +---------------+---------------+---------------+---------------+
-       |    ...Width   |            Height             |     Name      |
+       |             Width             |            Height             |
+       +---------------+---------------+---------------+---------------+
+       |          Time offset          |            Name...            |
        +---------------+---------------+---------------+---------------+
 
                    Figure 5: SMART_RECTS Message Format
@@ -266,13 +269,10 @@ Internet-Draft                    SMART                     October 2018
 
    I: controls the ID field.  If it is 0, there is no ID filed.
 
-   Name Len:  the length of the name field, it can between 0 - 63.
-
-   ID:  the identifier of the rectangle, value is defined by the app.
-
-   Left/Top:  2 bytes each, the left top point of the rectangle.
-
-   Width/Height:  2 bytes each, the width and height of the rectangle.
+   P: synchornization policy.  Zero means it will be rendered as soon as
+      possible when the message was received and one means it will be
+      synchronized with video stream, please refer to "Synchronize with
+      Media" section for detail.
 
 
 
@@ -282,31 +282,26 @@ Chen & Fu                Expires April 13, 2019                 [Page 5]
 Internet-Draft                    SMART                     October 2018
 
 
+   T: controls the Time offset field.  If it is 0, there is no time
+      offset field.
+
+   RES:  Reserved field, must be set to zero.
+
+   Name Len:  the length of the name field, it can between 0 - 255.
+
+   ID:  the identifier of the rectangle, value is defined by the app.
+
+   Left/Top:  2 bytes each, the left top point of the rectangle.
+
+   Width/Height:  2 bytes each, the width and height of the rectangle.
+
+   Time offset:  the timestamp offset to the common header timestamp.
+      This is useful when there is multiple submessages in one message
+      to save the bandwidth.  The unit is the same as video RTP
+      timestamp.
+
    Name:  the null-terminated UTF-8 string of the name tagging that
-      rectangle, up to 63 bytes.
-
-2.3.  SMART_TEXTS
-
-       +---------------+---------------+---------------+---------------+
-       |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
-       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |T|   Text Len  |          Time Offset          |     Text      |
-       +---------------+---------------+---------------+---------------+
-
-                   Figure 6: SMART_TEXTS Message Format
-
-   Similar to the SMART_RECTS, each filed of this sub-message is defined
-   as:
-
-   T: control if Time Offset field is present or not,
-
-   Text Len:  the length of the Name field minor 1, the name length can
-      be 1~128,
-
-   Time Offset:  the millisecond time offset corresponding to the
-      timestamp in common header,
-
-   Text:  A string in UTF-8 encoding.
+      rectangle, up to 255 bytes.
 
 3.  SDP Negotiation
 
@@ -330,6 +325,11 @@ Internet-Draft                    SMART                     October 2018
 
    Subtype name:  annotation
 
+   Required parameters:
+
+      type:  supported sub-message type values, use vertical bar to
+         concatenate, for example, type=0|1, means it will generate both
+
 
 
 
@@ -338,10 +338,6 @@ Chen & Fu                Expires April 13, 2019                 [Page 6]
 Internet-Draft                    SMART                     October 2018
 
 
-   Required parameters:
-
-      type:  supported sub-message type values, use vertical bar to
-         concatenate, for example, type=0|1, means it will generate both
          SMART_RECTS and SMART_TEXTS.  The type indicates how many
          payloads it could be encoded in the source side.
 
@@ -366,7 +362,7 @@ Internet-Draft                    SMART                     October 2018
     a=rtpmap:104 annotation/1000
     a=fmtp:104 type=1;maxbitrate=2
 
-              Figure 7: Example SDP Offer with SMART Support
+              Figure 6: Example SDP Offer with SMART Support
 
    In this example, 104 was selected for the media annotation and it
    will send along with audio stream.
@@ -375,17 +371,21 @@ Internet-Draft                    SMART                     October 2018
 
    TODO?
 
-4.  RTCWeb implicition
+4.  Synchronize with Media
 
-   To achieve the synced video annotation, RTCWeb needs to open
-   interface for application operating the rendering of the annotation
-   with the video.  Exposure of the video raw data to JS layer and let
-   application renders it with Canvas or WebGL would be a good choice.
+   There are 2 synchornization policis defined, one is no
+   synchornization and they will be rendered as fast as they are
+   decoded.  For example, the audio transcription should be updated even
+   the video was frozen due to network degration.
 
+   Sometime the frame needs to be synchornized with video stream, for
+   example, the face tracking rectangle, it would be meaningless if the
+   video was not up to date.
 
-
-
-
+   In either of the case, the SSRC of the payload is used to find the
+   corresponding video where the annotation should be rendered.
+   Sometime, if there is a media relay, the corresponding video SSRC
+   chould be CSRC of the receiving stream
 
 
 
@@ -393,6 +393,37 @@ Chen & Fu                Expires April 13, 2019                 [Page 7]
 
 Internet-Draft                    SMART                     October 2018
 
+
+   The timestamp in the media annotation is the same unit as video RTP
+   timestamp, and it needn't to be aligned to a video RTP timestamp.
+   The rendering of media annotation MUST NOT impact the synchronization
+   of audio and video rendering.  It can be an add-on to the current
+   media rendering.
+
+   The media annotation should be displayed in the following video
+   frames until the next annotation frame come.  If there is no up-
+   coming frame for a long while, the application should hide them.
+
+4.1.  Render a Media Annotation Frame
+
+   When a media annotation frame is decoded, it checks if the timestamp
+   is newer than the last rendered video frame.
+
+   If the last video frame is newer, then it should patch the annotation
+   into the rendered video frame and redraw the render view.  Any video
+   frame after that should be patched with the annotation until the
+   clear timer or next annotation frame come.
+
+   If the annotation frame is newer, it should be cached in a FIFO queue
+   and once next video frame comes, it will check if the annotation
+   frame should be poped and patched into the video frame.
+
+4.2.  RTCWeb implicition
+
+   To achieve the synchornized video annotation, RTCWeb needs to open
+   interface for application operating the rendering of the annotation
+   with the video.  Exposure of the video raw data to JS layer and let
+   application renders it with Canvas or WebGL would be a good choice.
 
 5.  Compatible
 
@@ -411,13 +442,22 @@ Internet-Draft                    SMART                     October 2018
    "application/annotation" media type should be registered as defined
    in [RFC6838].
 
+
+
+
+Chen & Fu                Expires April 13, 2019                 [Page 8]
+
+Internet-Draft                    SMART                     October 2018
+
+
 8.  Acknowledgements
 
-   https://www.iana.org/assignments/media-types/media-types.xhtml
-
-   http://asciiflow.com/
-
 9.  Normative References
+
+   [RFC3550]  Schulzrinne, H., Casner, S., Frederick, R., and V.
+              Jacobson, "RTP: A Transport Protocol for Real-Time
+              Applications", STD 64, RFC 3550, DOI 10.17487/RFC3550,
+              July 2003, <https://www.rfc-editor.org/info/rfc3550>.
 
    [RFC4855]  Casner, S., "Media Type Registration of RTP Payload
               Formats", RFC 4855, DOI 10.17487/RFC4855, February 2007,
@@ -430,27 +470,17 @@ Internet-Draft                    SMART                     October 2018
 
 Authors' Addresses
 
-   Wei Chen (editor)
+   Wei Chen
    CVTE
-   Gudang
-   HangZhou  320012
+   2 YouZhi Nong, Road MaoJiaQiao
+   HangZhou  310012
    China
 
    Phone: +86-013858060444
    Email: oeichenwei@gmail.com
 
 
-
-
-
-
-
-Chen & Fu                Expires April 13, 2019                 [Page 8]
-
-Internet-Draft                    SMART                     October 2018
-
-
-   Jiantao Fu (editor)
+   Jiantao Fu
    Cisco Systems, Inc.
    771 Alder Dr
    Milpitas  95035
@@ -458,36 +488,6 @@ Internet-Draft                    SMART                     October 2018
 
    Phone: +1-510-403-5644
    Email: jianfu@cisco.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
