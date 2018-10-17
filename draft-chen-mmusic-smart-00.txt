@@ -3,7 +3,7 @@
 
 
 mmusic                                                           W. Chen
-Internet-Draft                                                      CVTE
+Internet-Draft                                                       ABC
 Intended status: Standards Track                                   J. Fu
 Expires: April 13, 2019                              Cisco Systems, Inc.
                                                         October 10, 2018
@@ -385,7 +385,7 @@ Internet-Draft                    SMART                     October 2018
    In either of the case, the SSRC of the payload is used to find the
    corresponding video where the annotation should be rendered.
    Sometime, if there is a media relay, the corresponding video SSRC
-   chould be CSRC of the receiving stream
+   chould be CSRC of the receiving stream.
 
 
 
@@ -395,10 +395,10 @@ Internet-Draft                    SMART                     October 2018
 
 
    The timestamp in the media annotation is the same unit as video RTP
-   timestamp, and it needn't to be aligned to a video RTP timestamp.
-   The rendering of media annotation MUST NOT impact the synchronization
-   of audio and video rendering.  It can be an add-on to the current
-   media rendering.
+   timestamp, and it doesn't need to be aligned to a video RTP
+   timestamp.  The rendering of media annotation MUST NOT impact the
+   synchronization of audio and video rendering.  It can be an add-on to
+   the current media rendering.
 
    The media annotation should be displayed in the following video
    frames until the next annotation frame come.  If there is no up-
@@ -471,7 +471,7 @@ Internet-Draft                    SMART                     October 2018
 Authors' Addresses
 
    Wei Chen
-   CVTE
+   ABC
    2 YouZhi Nong, Road MaoJiaQiao
    HangZhou  310012
    China

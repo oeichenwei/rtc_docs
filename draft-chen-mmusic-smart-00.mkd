@@ -22,7 +22,7 @@ author:
       -
         ins: W. Chen
         name: Wei Chen
-        org: CVTE
+        org: ABC
         street: 2 YouZhi Nong, Road MaoJiaQiao 
         city: HangZhou
         code: 310012
@@ -321,10 +321,10 @@ face tracking rectangle, it would be meaningless if the video was not up to date
 
 In either of the case, the SSRC of the payload is used to find the corresponding 
 video where the annotation should be rendered. Sometime, if there is a media relay, 
-the corresponding video SSRC chould be CSRC of the receiving stream
+the corresponding video SSRC chould be CSRC of the receiving stream.
 
 The timestamp in the media annotation is the same unit as video RTP timestamp, 
-and it needn't to be aligned to a video RTP timestamp. The rendering of media annotation
+and it doesn't need to be aligned to a video RTP timestamp. The rendering of media annotation
 MUST NOT impact the synchronization of audio and video rendering. It can be an add-on
 to the current media rendering.
 
