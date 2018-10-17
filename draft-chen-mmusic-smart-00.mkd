@@ -22,11 +22,10 @@ author:
       -
         ins: W. Chen
         name: Wei Chen
-        org: CVTE
-        street: Gudang
-        role: editor
+        org: ABC
+        street: 2 YouZhi Nong, Road MaoJiaQiao 
         city: HangZhou
-        code: 320012
+        code: 310012
         country: China
         phone: +86-013858060444
         email: oeichenwei@gmail.com
@@ -34,7 +33,6 @@ author:
         ins: J. Fu
         name: Jiantao Fu
         org: Cisco Systems, Inc.
-        role: editor
         street: 771 Alder Dr
         city: Milpitas
         code: 95035
@@ -45,6 +43,7 @@ author:
 normative:
   RFC6838:
   RFC4855:
+  RFC3550:
 
 
 --- abstract
@@ -173,21 +172,21 @@ Len:
 : the length of the sub-message, not including the common header, in bytes
 
 SSRC:
-: 4 bytes, the SSRC of the corresponding source
+: 4 bytes, the SSRC of the corresponding video stream even when this payload 
+  is generated from an audio stream. The annotation should be rendered to the 
+  corresponding video stream.
 
 Timestamp:
-: 4 bytes, the timestamp of the corresponding source
+: 4 bytes, the same [RFC3550] RTP timestamp space as the corresponding video stream.
 
-This document defines 2 sub-message types and they can be extended in future.
+This document defines 1 sub-message type and they can be extended in future.
 
 ~~~~~~~~~~~
-            +------------------+----------+
-            |    Sub-message   |   Value  |  
-            +------------------+----------+
-            |  SMART_RECTS     |     0    |
-            +------------------+----------+
-            |  SMART_TEXTS     |     1    |
-            +------------------+----------+
+                +------------------+----------+
+                |    Sub-message   |   Value  |  
+                +------------------+----------+
+                |  SMART_RECTS     |     0    |
+                +------------------+----------+
 ~~~~~~~~~~~
 {: #message-type title="Pre-defined Message Types" }
 
@@ -197,11 +196,13 @@ This document defines 2 sub-message types and they can be extended in future.
       +---------------+---------------+---------------+---------------+
       |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-      |S|I| Name Len  |               ID              |       Left    |
+      |S|I|P|T|  RES  |   Name Len    |               ID              |
       +---------------+---------------+---------------+---------------+
-      |    ...Left    |             Top               |      Width    |
+      |             Left              |             Top               |
       +---------------+---------------+---------------+---------------+
-      |    ...Width   |            Height             |     Name      |
+      |             Width             |            Height             |
+      +---------------+---------------+---------------+---------------+
+      |          Time offset          |            Name...            |
       +---------------+---------------+---------------+---------------+
 ~~~~~~~~~~~      
 {: #message-rects title="SMART_RECTS Message Format" }
@@ -216,8 +217,19 @@ S:
 I:
 : controls the ID field. If it is 0, there is no ID filed.
 
+P:
+: synchornization policy. Zero means it will be rendered as soon as possible when
+  the message was received and one means it will be synchronized with video stream,
+  please refer to "Synchronize with Media" section for detail. 
+
+T:
+: controls the Time offset field. If it is 0, there is no time offset field.
+
+RES:
+: Reserved field, must be set to zero.
+
 Name Len:
-: the length of the name field, it can between 0 - 63.
+: the length of the name field, it can between 0 - 255.
 
 ID:
 : the identifier of the rectangle, value is defined by the app.
@@ -228,33 +240,13 @@ Left/Top:
 Width/Height:
 : 2 bytes each, the width and height of the rectangle.
 
+Time offset:
+: the timestamp offset to the common header timestamp. This is useful when there is 
+  multiple submessages in one message to save the bandwidth. The unit is the same
+  as video RTP timestamp.
+
 Name:
-: the null-terminated UTF-8 string of the name tagging that rectangle, up to 63 bytes.
-
-## SMART_TEXTS
-
-~~~~~~~~~~~
-      +---------------+---------------+---------------+---------------+
-      |0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|0|1|2|3|4|5|6|7|
-      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-      |T|   Text Len  |          Time Offset          |     Text      |
-      +---------------+---------------+---------------+---------------+
-~~~~~~~~~~~
-{: #message-texts title="SMART_TEXTS Message Format" }
-
-Similar to the SMART_RECTS, each filed of this sub-message is defined as:
-
-T:
-: control if Time Offset field is present or not,
-
-Text Len:
-: the length of the Name field minor 1, the name length can be 1~128,
-
-Time Offset:
-: the millisecond time offset corresponding to the timestamp in common header,
-
-Text:
-: A string in UTF-8 encoding.
+: the null-terminated UTF-8 string of the name tagging that rectangle, up to 255 bytes.
 
 # SDP Negotiation
 
@@ -318,9 +310,44 @@ along with audio stream.
 
 TODO?
 
-# RTCWeb implicition
+# Synchronize with Media
 
-To achieve the synced video annotation, RTCWeb needs to open interface for 
+There are 2 synchornization policis defined, one is no synchornization and they will be 
+rendered as fast as they are decoded. For example, the audio transcription should 
+be updated even the video was frozen due to network degration.
+
+Sometime the frame needs to be synchornized with video stream, for example, the 
+face tracking rectangle, it would be meaningless if the video was not up to date.
+
+In either of the case, the SSRC of the payload is used to find the corresponding 
+video where the annotation should be rendered. Sometime, if there is a media relay, 
+the corresponding video SSRC chould be CSRC of the receiving stream.
+
+The timestamp in the media annotation is the same unit as video RTP timestamp, 
+and it doesn't need to be aligned to a video RTP timestamp. The rendering of media annotation
+MUST NOT impact the synchronization of audio and video rendering. It can be an add-on
+to the current media rendering.
+
+The media annotation should be displayed in the following video frames until 
+the next annotation frame come. If there is no up-coming frame for a long while, 
+the application should hide them.
+
+## Render a Media Annotation Frame
+
+When a media annotation frame is decoded, it checks if the timestamp is newer than 
+the last rendered video frame. 
+
+If the last video frame is newer, then it should patch the annotation into the rendered 
+video frame and redraw the render view. Any video frame after that should be patched 
+with the annotation until the clear timer or next annotation frame come.
+
+If the annotation frame is newer, it should be cached in a FIFO queue and once next 
+video frame comes, it will check if the annotation frame should be poped and patched
+into the video frame.
+
+## RTCWeb implicition
+
+To achieve the synchornized video annotation, RTCWeb needs to open interface for 
 application operating the rendering of the annotation with the video. Exposure 
 of the video raw data to JS layer and let application renders it with Canvas or 
 WebGL would be a good choice.
@@ -340,8 +367,3 @@ and it should also support end to end encription.
 "application/annotation" media type should be registered as defined in [RFC6838].
 
 # Acknowledgements
-
-
-https://www.iana.org/assignments/media-types/media-types.xhtml
-
-http://asciiflow.com/
